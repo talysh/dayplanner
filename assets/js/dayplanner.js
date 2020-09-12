@@ -4,10 +4,16 @@
 // Take current time, and add 12 hours if it is in the evening
 var now = moment().format("hh");
 if (moment().format("a") == "pm") {
-    if (now != 12) now = parseInt(now) + 12;
+    if (now != 12) {
+        now = parseInt(now) + 12;
+    }
 }
 
-$("#currentDay").text(moment().format("dddd, MMM do YYYY"));
+// Update current time every second
+setInterval(function () {
+    $("#currentDay").text(moment().format("dddd, MMM do YYYY hh ss a"));
+}, 1000);
+
 
 var timeBlocksArray = [];
 function getTimesFromLocalstorage() {
@@ -32,36 +38,29 @@ function colorCode(timeForComparing, description) {
 }
 function createTimeBlock(time, id) {
     // Create a row for the time block
-    var timeForComparing = time / 100;
 
     var timeBlock = $("<div id=" + id + " class='row'> </div>");
     var timeStamp = $("<div class='col-2 hour time-block'> </div>");
     var description = $("<input type='text' class='description col-8'></input>");
     var saveButton = $("<button class='saveBtn col-2'></button>");
 
-    colorCode(timeForComparing, description);
+    colorCode(time, description);
 
     timeStamp.text(numberToStringTime(time));
-    timeStamp.appendTo(timeBlock);
-    description.appendTo(timeBlock);
-    saveButton.appendTo(timeBlock);
-    timeBlock.appendTo("#timeblocks");
+    timeBlock.append(timeStamp, description, saveButton);
+    $("#timeblocks").append(timeBlock);
 
 }
 
 // Take in a number representation of military time, and return a properly formatted string
 function numberToStringTime(numberTime) {
     textTime = numberTime.toString();
-    if (textTime.length === 3) {
-        return textTime.substring(0, 1) + ":" + textTime.substring(1, 3);
-    } else {
-        return textTime.substring(0, 2) + ":" + textTime.substring(2, 4);
-    }
+    return textTime + ":00";
 }
 
 // Display the entire planner
 function displayPlanner() {
-    for (var i = 1000; i < 2400; i += 100) {
+    for (var i = 8; i < 24; i++) {
         console.log(i);
         createTimeBlock(i, "time" + i);
     }
