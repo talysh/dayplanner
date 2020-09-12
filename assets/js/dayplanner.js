@@ -4,7 +4,7 @@
 // Take current time, and add 12 hours if it is in the evening
 var now = moment().format("hh");
 if (moment().format("a") == "pm") {
-    now = parseInt(now) + 12;
+    if (now != 12) now = parseInt(now) + 12;
 }
 
 $("#currentDay").text(moment().format("dddd, MMM do YYYY"));
@@ -13,7 +13,6 @@ var timeBlocksArray = [];
 function getTimesFromLocalstorage() {
     timeBlocksArray = JSON.parse(localStorage.getItem("timeBlocks")) || [];
 }
-
 
 function writeTimesToLocalstorage() {
 
