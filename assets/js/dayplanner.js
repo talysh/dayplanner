@@ -3,10 +3,8 @@ var activities = {};
 
 // Take current time, and add 12 hours if it is in the evening
 var now = moment().format("hh");
-if (moment().format("a") == "pm") {
-    if (now != 12) {
-        now = parseInt(now) + 12;
-    }
+if ((moment().format("a") == "pm" && now != 12)) {
+    now = parseInt(now) + 12;
 }
 
 // Update current time every second
@@ -14,34 +12,27 @@ setInterval(function () {
     $("#currentDay").text(moment().format("dddd, MMM do YYYY hh mm ss a"));
 }, 1000);
 
-
-function getTimesFromLocalstorage() {
-    activities = JSON.parse(localStorage.getItem("activities")) || {};
-}
-
-
+// If there are activities in localdrive, display each activity in the appropriate time slot
 function displayActivities() {
-    getTimesFromLocalstorage();
+    activities = JSON.parse(localStorage.getItem("activities")) || {};
     if (activities) {
         for (var key in activities) {
-            $(`[data-description=${key}`).text(activities[key]);
+            $(`[data-description=${key}]`).text(activities[key]);
         }
     }
 }
 
+// Save activities to the local storage
 function writeTimesToLocalstorage() {
-    console.log(activities);
     localStorage.setItem("activities", JSON.stringify(activities));
 
 }
 
-
-
-// Color code individual timeblocks
-function colorCode(timeForComparing, description) {
-    if (timeForComparing == now) {
+// Color code individual timeblocks to represent present, past, and future using red, grey, and green colors.
+function colorCode(timeBlock, description) {
+    if (timeBlock == now) {
         description.addClass("present");
-    } else if (timeForComparing < now) {
+    } else if (timeBlock < now) {
         description.addClass("past");
     } else {
         description.addClass("future");
@@ -52,15 +43,15 @@ function createTimeBlock(time) {
     // Create a row for the time block
 
     var dataTag = "time" + time;
-    var timeBlock = $("<div class='row'> </div>");
-    var timeStamp = $("<div class='col-2 hour time-block'> </div>");
-    var description = $("<textarea class='description col-8' data-description=" + dataTag + "></textarea>");
-    var saveButton = $("<button class='saveBtn col-2' data-time=" + dataTag + "></button>");
+    var individualHour = $("<div class='row'>");
+    var timeStamp = $("<div class='col-2 hour time-block'>");
+    var activityDescription = $("<textarea class='description col-8' data-description=" + dataTag + ">");
+    var saveButton = $("<button class='saveBtn col-2' data-time=" + dataTag + "><i class='fas fa-save'></i>");
 
-    colorCode(time, description);
+    colorCode(time, activityDescription);
     timeStamp.text(numberToStringTime(time));
-    timeBlock.append(timeStamp, description, saveButton);
-    $("#timeblocks").append(timeBlock);
+    individualHour.append(timeStamp, activityDescription, saveButton);
+    $("#timeblocks").append(individualHour);
 
 }
 
@@ -72,12 +63,11 @@ function numberToStringTime(numberTime) {
 
 // Display the entire planner
 function displayPlanner() {
-    for (var i = 9; i < 17; i++) {
+    for (var i = 8; i < 17; i++) {
         createTimeBlock(i);
     }
     displayActivities();
 }
-
 
 displayPlanner();
 
