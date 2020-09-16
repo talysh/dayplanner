@@ -1,15 +1,12 @@
 // For storing activity descriptions
 var activities = {};
 
-// Take current time, and add 12 hours if it is in the evening
-var now = moment().format("hh");
-if ((moment().format("a") == "pm" && now != 12)) {
-    now = parseInt(now) + 12;
-}
+// Take current time
+var now = moment().hours();
 
 // Update current time every second
 setInterval(function () {
-    $("#currentDay").text(moment().format("dddd, MMM do YYYY hh mm ss a"));
+    $("#currentDay").text(moment().format("dddd, MMM Do YYYY hh mm ss a"));
 }, 1000);
 
 // If there are activities in localdrive, display each activity in the appropriate time slot
@@ -23,9 +20,8 @@ function displayActivities() {
 }
 
 // Save activities to the local storage
-function writeTimesToLocalstorage() {
+function writeActivitiesToLocalstorage() {
     localStorage.setItem("activities", JSON.stringify(activities));
-
 }
 
 // Color code individual timeblocks to represent present, past, and future using red, grey, and green colors.
@@ -37,8 +33,8 @@ function colorCode(timeBlock, description) {
     } else {
         description.addClass("future");
     }
-
 }
+
 function createTimeBlock(time) {
     // Create a row for the time block
 
@@ -63,7 +59,7 @@ function numberToStringTime(numberTime) {
 
 // Display the entire planner
 function displayPlanner() {
-    for (var i = 8; i < 17; i++) {
+    for (var i = 9; i < 18; i++) {
         createTimeBlock(i);
     }
     displayActivities();
@@ -72,19 +68,17 @@ function displayPlanner() {
 displayPlanner();
 
 
-
-
 // When save button is clicked, check the adjasent textarea, and if it has value, add it to timeblocks object
 $(".saveBtn").click(function () {
 
     // when save button is clicked get its data attribute
     var identifier = $(this).data("time");
     // select description box with the same data attribute
-    var description = $(`[data-description=${identifier}`);
-    if (description.val() != "") {
+    var description = $(`[data-description=${identifier}]`);
+    if (description.val() != undefined) {
         //take that value and assign create an object with the time stamp as key, and the text content as value
         activities[identifier] = description.val();
-        writeTimesToLocalstorage();
+        writeActivitiesToLocalstorage();
     }
 
 });
